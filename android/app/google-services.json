@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "109276614119",
+    "firebase_url": "https://flashcard-62859.firebaseio.com",
+    "project_id": "flashcard-62859",
+    "storage_bucket": "flashcard-62859.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109276614119:android:7bbae1d906a625c0",
+        "android_client_info": {
+          "package_name": "com.github.sidky.flashcard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "109276614119-m27uutsp4hov0q7kijp9bo4halclspge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-eV5sjNFCnWlEMIi0wt868OtoYFzGcgI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
