@@ -99,7 +99,7 @@ abstract class _AbstractWordCardUIState extends _FlashCardUIState {
   @override
   Color cardColor() {
     switch (_card.wordType) {
-      case WordType.male: return Color.fromARGB(255, 0, 0, 255); // blue
+      case WordType.male: return Color.fromARGB(255, 135, 206, 255); // blue
       case WordType.female: return Color.fromARGB(255, 255, 0, 0);
       case WordType.plural: return Color.fromARGB(255, 255, 204, 51);
       case WordType.neutral: return Color.fromARGB(0, 255, 0, 255);
@@ -139,6 +139,7 @@ class _AnswerUIState extends _AbstractWordCardUIState {
 
   @override
   Widget build(BuildContext ctx) {
+    print(_card.toString());
     return Column(
       children: <Widget>[
         Expanded(

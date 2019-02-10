@@ -18,10 +18,14 @@ class FlashCardDAO {
 
   FlashCardDAO(this.app);
 
-  Future<void> initialize() async {
-    await FirebaseDatabase.instance.setPersistenceEnabled(true);
+  bool _initialized = false;
 
+  Future<void> initialize() async {
     _db = FirebaseDatabase(app: this.app);
+
+    var isPersistant = await _db.setPersistenceEnabled(true);
+    print('Persistant: $isPersistant');
+    await _db.setPersistenceCacheSizeBytes(10000000);
 
     var wordRef = _db.reference().child("words");
 
@@ -30,7 +34,7 @@ class FlashCardDAO {
 
       _words.clear();
       values.forEach((key, value) {
-        _words.add(_getCardFromMap(key, values));
+        _words.add(_getCardFromMap(key, value));
       });
     });
 
@@ -53,36 +57,18 @@ class FlashCardDAO {
         _words.add(changed);
       }
     });
+
+    _initialized = true;
   }
 
   Future<WordCard> randomFlashCard() async {
-    final FirebaseDatabase db = FirebaseDatabase(app: this.app);
+    if (!_initialized) {
+      await initialize();
+    }
+    var length = _words.length;
+    var index = rng.nextInt(length);
 
-    WordCard card = await db.reference().child("words").once()
-        .then((onValue) {
-          Map data = onValue.value;
-          var length = data.length;
-          var index = rng.nextInt(length);
-          print(length);
-          print(data);
-          var key = data.keys.toList().elementAt(index);
-          Map values = data[key];
-
-          WordType wordType = parseWordType(values['type']);
-
-          Map relatedWordMap = values['related'];
-          List<RelatedWord> relateds = List();
-
-          if (relatedWordMap != null) {
-            relatedWordMap.forEach((key, value) {
-              RelatedType type = parseRelatedWordType(key);
-              relateds.add(RelatedWord(type, value));
-            });
-          }
-
-          return WordCard(key, values['value'], wordType, relateds);
-        });
-    return card;
+    return _words[index];
   }
 
   WordCard _getCard(DataSnapshot snapshot) {
@@ -94,7 +80,7 @@ class FlashCardDAO {
 
   WordCard _getCardFromMap(String word, Map values) {
     String translation = values['value'];
-    WordType wordType = values['type'];
+    WordType wordType = parseWordType(values['type']);
     Map relatedWordMap = values['related'];
     List<RelatedWord> relateds = List();
 

@@ -52,5 +52,10 @@ class WordCard {
   final List<RelatedWord> relatedWords;
 
   WordCard(this.word, this.value, this.wordType, this.relatedWords);
+
+  @override
+  String toString() {
+    return 'WordCard{word: $word, value: $value, wordType: $wordType, relatedWords: $relatedWords}';
+  }
 }
 
