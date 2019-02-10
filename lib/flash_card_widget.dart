@@ -115,7 +115,7 @@ class _CardUIState extends _AbstractWordCardUIState {
   Widget build(BuildContext ctx) {
     return Container(
       alignment: FractionalOffset.center,
-        child: Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(
@@ -139,13 +139,34 @@ class _AnswerUIState extends _AbstractWordCardUIState {
 
   @override
   Widget build(BuildContext ctx) {
-    return Center(
-      child: Text(
-        _card.value,
-        style: TextStyle(
-          fontSize: 40,
+    return Column(
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: Center(
+            child: Text(
+              _card.value,
+              style: TextStyle(
+                fontSize: 40,
+              ),
+            ),
+          ),
         ),
-      ),
+        Visibility(
+            child: Row(mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                GestureDetector(
+                  child: Padding(
+                    child: Text("Related", style: TextStyle(fontSize: 25.0)),
+                    padding: EdgeInsets.all(15.0)
+                  ),
+                  onTap: () {
+                    displayRelated(ctx);
+                  },)
+              ],),
+            visible: _card.relatedWords.isNotEmpty
+        )
+      ],
     );
   }
 
@@ -154,4 +175,26 @@ class _AnswerUIState extends _AbstractWordCardUIState {
 
   @override
   bool canMoveNext() => true;
+
+  displayRelated(BuildContext context) {
+    double fontSize = 25.0;
+    showModalBottomSheet(context: context, builder: (BuildContext ctx) {
+      return Padding(
+          child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: _card.relatedWords.map((related) {
+          return Row(
+            children: <Widget>[
+              Text(
+                relatedTypeName(related.type),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),
+              ),
+              Spacer(),
+              Text(related.word, style: TextStyle(fontSize: fontSize))
+            ],
+          );
+        }).toList(),
+      ), padding: EdgeInsets.all(10.0),);
+    });
+  }
 }
