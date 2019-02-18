@@ -2,13 +2,15 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flash_card/data/sync_list.dart';
 import 'card.dart';
 
 import 'dart:math';
 
 class FlashCardDAO {
 
-  List<WordCard> _words = List();
+  final SyncList<WordCard> _words = SyncList();
+  final SyncList<VerbFormCard> _verbs = SyncList();
 
   final FirebaseApp app;
 
@@ -27,38 +29,45 @@ class FlashCardDAO {
     print('Persistant: $isPersistant');
     await _db.setPersistenceCacheSizeBytes(10000000);
 
-    var wordRef = _db.reference().child("words");
+    _addListeners("words", _words, _getCardFromMap);
+    _addListeners("verbs", _verbs, _getVerbFromMap);
 
-    await wordRef.once().then((snapshot) {
-      Map values = snapshot.value;
-
-      _words.clear();
-      values.forEach((key, value) {
-        _words.add(_getCardFromMap(key, value));
-      });
-    });
-
-    wordRef.onChildAdded.listen((event) {
-      _words.add(_getCard(event.snapshot));
-    });
-
-    wordRef.onChildRemoved.listen((event) {
-      var word = event.snapshot.key;
-      _words.removeAt(_words.indexWhere((card) => card.word == word));
-    });
-
-    wordRef.onChildChanged.listen((event) {
-      var changed = _getCard(event.snapshot);
-      var index = _words.indexWhere((card) => card.word == changed.word);
-
-      if (index >= 0) {
-        _words[index] = changed;
-      } else {
-        _words.add(changed);
-      }
+    // Verbs
+    var verbRef = _db.reference().child("verbs");
+    await verbRef.once().then((snapshot) {
     });
 
     _initialized = true;
+  }
+
+  void _addListeners<T extends HasKey>(String child, SyncList<T> list, T converter(String key, dynamic value)) async {
+    var ref = _db.reference().child(child);
+    var items = await ref.once().then((snapshot) {
+      Map values = snapshot.value;
+
+      List<T> items = List();
+      values.forEach((key, value) => items.add(converter(key, value)));
+      return items;
+    });
+    list.addAll(items);
+
+    ref.onChildAdded.listen((event) {
+      var snapshot = event.snapshot;
+      var item = converter(snapshot.key, snapshot.value);
+      list.onAdd(item);
+    });
+
+    ref.onChildRemoved.listen((event) {
+      var snapshot = event.snapshot;
+      var item = converter(snapshot.key, snapshot.value);
+      list.onRemove(item);
+    });
+
+    ref.onChildChanged.listen((event) {
+      var snapshot = event.snapshot;
+      var item = converter(snapshot.key, snapshot.value);
+      list.onChanged(item);
+    });
   }
 
   Future<WordCard> randomFlashCard() async {
@@ -71,17 +80,26 @@ class FlashCardDAO {
     return _words[index];
   }
 
-  WordCard _getCard(DataSnapshot snapshot) {
-    var word = snapshot.key;
-    Map values = snapshot.value;
+  Future<HasKey> randomCard() async {
+    if (!_initialized) {
+      await initialize();
+    }
 
-    return _getCardFromMap(word, values);
+    var total = _words.length + _verbs.length;
+    var index = rng.nextInt(total);
+
+    if (index < _words.length) {
+      return _words[index];
+    } else {
+      return _verbs[index - _words.length];
+    }
   }
 
-  WordCard _getCardFromMap(String word, Map values) {
-    String translation = values['value'];
-    WordType wordType = parseWordType(values['type']);
-    Map relatedWordMap = values['related'];
+  WordCard _getCardFromMap(String word, dynamic values) {
+    Map map = values;
+    String translation = map['value'];
+    WordType wordType = parseWordType(map['type']);
+    Map relatedWordMap = map['related'];
     List<RelatedWord> relateds = List();
 
     if (relatedWordMap != null) {
@@ -92,5 +110,19 @@ class FlashCardDAO {
     }
 
     return WordCard(word, translation, wordType, relateds);
+  }
+
+  VerbFormCard _getVerbFromMap(String word, dynamic values) {
+    final Map map = values;
+    final String translation = map['value'];
+    Map forms = map['forms'];
+
+    Map<String, String> pronouns = Map();
+
+    forms.forEach((key, value) {
+      pronouns[key] = value as String;
+    });
+
+    return VerbFormCard(word, translation, pronouns);
   }
 }

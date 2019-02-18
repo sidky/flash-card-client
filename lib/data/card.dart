@@ -45,7 +45,11 @@ class RelatedWord {
   const RelatedWord(this.type, this.word);
 }
 
-class WordCard {
+abstract class HasKey {
+  String get key;
+}
+
+class WordCard extends HasKey {
   final String word;
   final String value;
   final WordType wordType;
@@ -57,5 +61,24 @@ class WordCard {
   String toString() {
     return 'WordCard{word: $word, value: $value, wordType: $wordType, relatedWords: $relatedWords}';
   }
+
+  @override
+  String get key => word;
+}
+
+class VerbFormCard extends HasKey {
+  final String word;
+  final String translation;
+  final Map<String, String> forms;
+
+  VerbFormCard(this.word, this.translation, this.forms);
+
+  @override
+  String toString() {
+    return 'VerbFormCard{word: $word, translation: $translation, forms: $forms}';
+  }
+
+  @override
+  String get key => word;
 }
 
