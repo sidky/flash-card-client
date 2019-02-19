@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flash_card/data/random_selector.dart';
 import 'package:flash_card/data/sync_list.dart';
 import 'card.dart';
 
@@ -11,10 +12,11 @@ class FlashCardDAO {
 
   final SyncList<WordCard> _words = SyncList();
   final SyncList<VerbFormCard> _verbs = SyncList();
+  final SyncList<SentenceCard> _sentences = SyncList();
 
   final FirebaseApp app;
 
-  final Random rng = Random();
+  final RandomSelector<HasKey> _selector = RandomSelector();
 
   FirebaseDatabase _db;
 
@@ -31,6 +33,11 @@ class FlashCardDAO {
 
     _addListeners("words", _words, _getCardFromMap);
     _addListeners("verbs", _verbs, _getVerbFromMap);
+    _addListeners("sentences", _sentences, _getSentenceFromMap);
+
+    _selector.addList(_words, 0);
+    _selector.addList(_verbs, 0);
+    _selector.addList(_sentences, 3);
 
     // Verbs
     var verbRef = _db.reference().child("verbs");
@@ -70,29 +77,22 @@ class FlashCardDAO {
     });
   }
 
-  Future<WordCard> randomFlashCard() async {
-    if (!_initialized) {
-      await initialize();
-    }
-    var length = _words.length;
-    var index = rng.nextInt(length);
-
-    return _words[index];
-  }
+//  Future<WordCard> randomFlashCard() async {
+//    if (!_initialized) {
+//      await initialize();
+//    }
+//    var length = _words.length;
+//    var index = rng.nextInt(length);
+//
+//    return _words[index];
+//  }
 
   Future<HasKey> randomCard() async {
     if (!_initialized) {
       await initialize();
     }
 
-    var total = _words.length + _verbs.length;
-    var index = rng.nextInt(total);
-
-    if (index < _words.length) {
-      return _words[index];
-    } else {
-      return _verbs[index - _words.length];
-    }
+    return _selector.randomItem();
   }
 
   WordCard _getCardFromMap(String word, dynamic values) {
@@ -124,5 +124,14 @@ class FlashCardDAO {
     });
 
     return VerbFormCard(word, translation, pronouns);
+  }
+
+  SentenceCard _getSentenceFromMap(String key, values) {
+    final Map map = values;
+    final String translation = map['translation'];
+    final String answer = map['answer'];
+    final String answerTranslation = map['answer_translation'];
+
+    return SentenceCard(key, translation, answer, answerTranslation);
   }
 }

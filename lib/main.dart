@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'data/flash_card_dao.dart';
@@ -24,9 +26,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    dao.randomFlashCard().then((card) {
-      print(card.word);
-    });
+//    dao.randomFlashCard().then((card) {
+//      print(card.word);
+//    });
 
     return MaterialApp(
       title: 'Flash Card',

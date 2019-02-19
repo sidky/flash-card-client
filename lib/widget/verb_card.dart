@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flash_card/data/card.dart';
 import 'package:flash_card/widget/ui_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 abstract class _AbstractVerbCardUIState extends FlashCardUIState {
   @override

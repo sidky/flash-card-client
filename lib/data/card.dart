@@ -49,13 +49,13 @@ abstract class HasKey {
   String get key;
 }
 
-class WordCard extends HasKey {
+class WordCard implements HasKey {
   final String word;
   final String value;
   final WordType wordType;
   final List<RelatedWord> relatedWords;
 
-  WordCard(this.word, this.value, this.wordType, this.relatedWords);
+  const WordCard(this.word, this.value, this.wordType, this.relatedWords);
 
   @override
   String toString() {
@@ -66,12 +66,12 @@ class WordCard extends HasKey {
   String get key => word;
 }
 
-class VerbFormCard extends HasKey {
+class VerbFormCard implements HasKey {
   final String word;
   final String translation;
   final Map<String, String> forms;
 
-  VerbFormCard(this.word, this.translation, this.forms);
+  const VerbFormCard(this.word, this.translation, this.forms);
 
   @override
   String toString() {
@@ -82,3 +82,14 @@ class VerbFormCard extends HasKey {
   String get key => word;
 }
 
+class SentenceCard implements HasKey {
+  final String question;
+  final String translation;
+  final String answer;
+  final String answerTranslation;
+
+  const SentenceCard(this.question, this.translation, this.answer, this.answerTranslation);
+
+  @override
+  String get key => question;
+}
