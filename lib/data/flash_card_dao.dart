@@ -6,8 +6,6 @@ import 'package:flash_card/data/random_selector.dart';
 import 'package:flash_card/data/sync_list.dart';
 import 'card.dart';
 
-import 'dart:math';
-
 class FlashCardDAO {
 
   final SyncList<WordCard> _words = SyncList();
@@ -35,8 +33,8 @@ class FlashCardDAO {
     _addListeners("verbs", _verbs, _getVerbFromMap);
     _addListeners("sentences", _sentences, _getSentenceFromMap);
 
-    _selector.addList(_words, 0);
-    _selector.addList(_verbs, 0);
+    _selector.addList(_words, 1);
+    _selector.addList(_verbs, 7);
     _selector.addList(_sentences, 3);
 
     // Verbs

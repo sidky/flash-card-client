@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flash_card/data/card.dart';
+import 'package:flash_card/widget/deutsch_tts.dart';
 import 'package:flash_card/widget/ui_state.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,13 @@ class SentenceCardUIState extends _AbstractSentenceCardUIState {
     return Center(
       child: Padding(
         padding: EdgeInsets.all(20),
-        child: Text(sentence, style: TextStyle(fontSize: 25),),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(sentence, style: TextStyle(fontSize: 25),),
+            DeutscheTTS(sentence)
+          ],
+        )
       )
     );
   }
@@ -86,6 +93,7 @@ class SentenceCardAnswerUIState extends _AbstractSentenceCardUIState {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(_card.answer, style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.normal, fontWeight: FontWeight.bold),),
+            DeutscheTTS(_card.answer),
             Text(_card.answerTranslation, style: TextStyle(fontSize: 20.0, fontStyle: FontStyle.italic),)
           ],
         ),

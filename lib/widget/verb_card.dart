@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flash_card/data/card.dart';
+import 'package:flash_card/widget/deutsche_tts_text.dart';
 import 'package:flash_card/widget/ui_state.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,7 @@ class VerbCardUIState extends _AbstractVerbCardUIState {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(
+          DeutscheTTSText(
             _card.word,
             style: TextStyle(fontSize: 40),
           ),
@@ -59,7 +60,7 @@ class VerbCardAnswerUIState extends _AbstractVerbCardUIState {
         Expanded(
           flex: 1,
           child: Center(
-            child: Text(
+            child: DeutscheTTSText(
               _answer,
               style: TextStyle(fontSize: 40),
             ),
@@ -90,24 +91,43 @@ class VerbCardAnswerUIState extends _AbstractVerbCardUIState {
   String get _answer => '$_pronoun ${_card.forms[_pronoun]}';
 
   void displayOthers(BuildContext context) {
-    double fontSize = 25.0;
+    double fontSize = 15.0;
     List<Widget> forms = List();
     _card.forms.forEach((key, value) {
       forms.add(
         Row(
           children: <Widget>[
             Text(key, style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize)),
-            Text(value, style: TextStyle(fontSize: fontSize)),
+            Padding(padding: EdgeInsets.all(2.0),),
+            SizedBox(
+              width: 24.0,
+              height: 24.0,
+              child: DeutscheTTSText(value, style: TextStyle(fontSize: fontSize), speech: '${_keyToSpeak(key)} $value', iconSize: 10.0,),
+            )
+
           ]
         )
       );
     });
+
+    var pronouns = _card.forms.keys.toList();
+
+    var builder = ListView.builder(itemCount: pronouns.length, itemBuilder: (BuildContext ctx, int index) {
+      var key = pronouns[index];
+      var value = _card.forms[key];
+      return Row(
+          children: <Widget>[
+            Text(key, style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize)),
+            Padding(padding: EdgeInsets.all(2.0),),
+            DeutscheTTSText(value, style: TextStyle(fontSize: fontSize), speech: '${_keyToSpeak(key)} $value', iconSize: fontSize,),
+          ]
+      );
+    });
+
     showModalBottomSheet(context: context, builder: (BuildContext ctx) {
-      return Padding(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: forms
-        ), padding: EdgeInsets.all(10.0),);
+      return builder.build(context);
     });
   }
+
+  String _keyToSpeak(String key) => key == "sie_plural" ? "sie" : key;
 }

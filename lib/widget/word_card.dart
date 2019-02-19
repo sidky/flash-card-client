@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flash_card/data/card.dart';
+import 'package:flash_card/widget/deutsche_tts_text.dart';
 import 'package:flash_card/widget/ui_state.dart';
 import 'package:flutter/material.dart';
 
@@ -34,12 +35,12 @@ class WordCardUIState extends _AbstractWordCardUIState {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(
+          DeutscheTTSText(
             _card.word,
             style: TextStyle(
               fontSize: 40,
             ),
-          )
+          ),
         ],
       ),
     );
@@ -107,7 +108,7 @@ class WordAnswerUIState extends _AbstractWordCardUIState {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),
                 ),
                 Spacer(),
-                Text(related.word, style: TextStyle(fontSize: fontSize))
+                DeutscheTTSText(related.word, style: TextStyle(fontSize: fontSize))
               ],
             );
           }).toList(),

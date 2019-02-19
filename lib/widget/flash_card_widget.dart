@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flash_card/data/card.dart';
 import 'package:flash_card/data/flash_card_dao.dart';
+import 'package:flash_card/data/tts_helper.dart';
 import 'package:flash_card/widget/loading_widget.dart';
 import 'package:flash_card/widget/sentence_card.dart';
 import 'package:flash_card/widget/ui_state.dart';
@@ -22,6 +23,7 @@ class FlashCardWidget extends StatefulWidget {
 
 class _FlashCardState extends State<FlashCardWidget> {
   final FlashCardDAO _dao;
+  TTSHelper _ttsHelper = TTSHelper();
 
   _FlashCardState(this._dao) {
     _uiState = LoadingUIState();
@@ -31,6 +33,7 @@ class _FlashCardState extends State<FlashCardWidget> {
   void initState() {
     super.initState();
     next();
+    _ttsHelper.initState();
   }
 
   FlashCardUIState _uiState;
